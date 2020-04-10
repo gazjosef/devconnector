@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { check, validationResult } = require('express-validator/check');
+const gravatar = require('gravatar');
+// 'express-validator/check' is deprecated, using 'express-validator' instead
+const { check, validationResult } = require('express-validator');
 
 const User = require('../../models/User');
 
@@ -29,10 +31,16 @@ router.post(
       let user = await User.findOne({ email });
 
       if (user) {
-        res.status(400).json();
+        res.status(400).json({ err: [{ msg: 'User already exists' }] });
       }
 
-      // Get users gravatar
+      const avatar = gravatar.url(email, {
+        s: '200',
+        r: 'pg',
+        d: 'mm',
+      });
+
+      user = new User({ name, email, avatar, password });
 
       // Encrypt password
 
