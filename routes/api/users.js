@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const gravatar = require('gravatar');
-const bycrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs');
 // 'express-validator/check' is deprecated, using 'express-validator' instead
 const { check, validationResult } = require('express-validator');
 
@@ -41,11 +41,16 @@ router.post(
         d: 'mm',
       });
 
-      user = new User({ name, email, avatar, password });
+      user = new User({
+        name,
+        email,
+        avatar,
+        password,
+      });
 
-      const salt = await bycrypt.genSalt(10);
+      const salt = await bcrypt.genSalt(10);
 
-      user.password = await bycrypt.hash(password, salt);
+      user.password = await bcrypt.hash(password, salt);
 
       await user.save();
 
