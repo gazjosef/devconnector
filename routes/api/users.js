@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const gravatar = require('gravatar');
+const bycrypt = require('bcryptjs');
 // 'express-validator/check' is deprecated, using 'express-validator' instead
 const { check, validationResult } = require('express-validator');
 
@@ -42,10 +43,14 @@ router.post(
 
       user = new User({ name, email, avatar, password });
 
-      // Encrypt password
+      const salt = await bycrypt.genSalt(10);
+
+      user.password = await bycrypt.hash(password, salt);
+
+      await user.save();
 
       // Return jsonwebtoken
-      res.send('User route');
+      res.send('User registered');
     } catch (err) {
       console.log(err.message);
       res.status(500).send('Server error');
