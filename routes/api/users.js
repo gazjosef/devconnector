@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 // 'express-validator/check' is deprecated, using 'express-validator' instead
 const { check, validationResult } = require('express-validator');
 
@@ -54,8 +55,11 @@ router.post(
 
       await user.save();
 
-      // Return jsonwebtoken
-      res.send('User registered');
+      const payload = {
+        user: {
+          id: user.id,
+        },
+      };
     } catch (err) {
       console.log(err.message);
       res.status(500).send('Server error');
