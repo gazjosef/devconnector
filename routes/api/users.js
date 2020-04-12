@@ -3,6 +3,7 @@ const router = express.Router();
 const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const config = require('config');
 // 'express-validator/check' is deprecated, using 'express-validator' instead
 const { check, validationResult } = require('express-validator');
 
@@ -60,6 +61,16 @@ router.post(
           id: user.id,
         },
       };
+
+      jwt.sign(
+        payload,
+        config.get('jwtToken'),
+        { expiresIn: 3600 },
+        (err, token) => {
+          if (err) throw err;
+          res.json({ token });
+        }
+      );
     } catch (err) {
       console.log(err.message);
       res.status(500).send('Server error');
