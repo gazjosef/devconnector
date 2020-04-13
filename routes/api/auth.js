@@ -28,10 +28,7 @@ router.post(
   '/',
   [
     check('email', 'Please include a valid email').isEmail(),
-    check(
-      'password',
-      'Please enter a password with six or more characters'
-    ).isLength({ min: 6 }),
+    check('password', 'Password is required').exists(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -39,13 +36,15 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, email, password } = req.body;
+    const { email, password } = req.body;
 
     try {
       let user = await User.findOne({ email });
 
-      if (user) {
-        return res.status(400).json({ err: [{ msg: 'User already exists' }] });
+      if (!user) {
+        return res
+          .status(400)
+          .json({ errors: [{ msg: 'Invalid credentials' }] });
       }
 
       const avatar = gravatar.url(email, {
