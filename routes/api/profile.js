@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../../middleware/auth');
-const { check, validationResult } = require('express-validator/check');
+// 'express-validator/check' is deprecated, using 'express-validator' instead
+const { check, validationResult } = require('express-validator');
 
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
@@ -39,7 +40,7 @@ router.post(
     ],
   ],
   async (req, res) => {
-    const errors = validationResults(req);
+    const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
